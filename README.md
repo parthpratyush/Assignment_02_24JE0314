@@ -145,21 +145,14 @@ python run_study.py --re 1500 --omega0 0.1 --y-max 12 \
 
 ## 6. Generated figures
 
-### Dispersion contours
+Running `python run_study.py` generates the following plots in the `figures/` directory in both PNG and SVG formats:
 
-![Dispersion contours](figures/dispersion_contours.png)
+- Dispersion zero contours in the complex-`alpha` plane, with the refined eigenvalues marked.
+- Scaled magnitude of the wall dispersion function.
+- Blasius base-flow velocity and its second derivative.
+- Spatial growth/decay indicator for the computed modes.
 
-### Scaled dispersion magnitude
-
-![Dispersion magnitude](figures/dispersion_magnitude.png)
-
-### Blasius base flow
-
-![Blasius base flow](figures/blasius_base_flow.png)
-
-### Spatial growth / decay indicator
-
-![Spatial growth indicator](figures/spatial_growth_indicator.png)
+The generated plots and the submission-ready PDF report are included in the downloadable project bundle.
 
 ## 7. Notes and assumptions
 
