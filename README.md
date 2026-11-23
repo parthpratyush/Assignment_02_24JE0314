@@ -41,7 +41,7 @@ The free-stream decay parameter is
 
 $$
 Q = \sqrt{\alpha^2+i\widetilde{Re}(\alpha-\omega_0)},
-\qquad \operatorname{Re}(Q)>0
+\qquad \mathrm{Re}(Q)>0
 $$
 
 The square-root branch is selected so that the disturbance modes decay in the free stream.
@@ -103,7 +103,7 @@ $$
 The roots of this complex equation are found by locating the intersection of the contours
 
 $$
-\operatorname{Re}(y_1(0))=0
+\mathrm{Re}(y_1(0))=0
 \qquad \text{and} \qquad
 \operatorname{Im}(y_1(0))=0
 $$
