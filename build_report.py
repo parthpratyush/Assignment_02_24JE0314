@@ -16,10 +16,10 @@ def main():
       Paragraph('Spatial stability of a Blasius boundary layer - Compound Matrix Method',styles['Heading2']),
       Paragraph('Student: Pratyush Singh Parmar | Roll No.: 24JE0314 | IIT (ISM) Dhanbad',styles['Body2']),Spacer(1,1*cm),
       Paragraph('1. Governing equation',styles['Section2']),
-      Preformatted('(D^2-alpha^2)^2 phi = i Re [(alpha U-omega0)(D^2-alpha^2)phi - alpha U\'\' phi]'),
+      Preformatted('(D^2-alpha^2)^2 phi = i Re [(alpha U-omega0)(D^2-alpha^2)phi - alpha U\'\' phi]', styles['Code']),
       Paragraph('2. Compound-matrix IVP',styles['Section2']),
-      Preformatted('y1\' = y2; y2\' = y3+y4; y3\' = b1*y2+y5; y4\' = y5;\ny5\' = y6+b1*y4+b2*y1; y6\' = b2*y2'),
-      Preformatted('Q=sqrt(alpha^2+i Re(alpha-omega0))\ny1=alpha-Q; y2=Q^2-alpha^2; y3=alpha^3-Q^3\ny4=alpha^2*Q-alpha*Q^2; y5=alpha*Q^3-alpha^3*Q; y6=alpha^3*Q^2-alpha^2*Q^3'),
+      Preformatted('y1\' = y2; y2\' = y3+y4; y3\' = b1*y2+y5; y4\' = y5;\ny5\' = y6+b1*y4+b2*y1; y6\' = b2*y2', styles['Code']),
+      Preformatted('Q=sqrt(alpha^2+i Re(alpha-omega0))\ny1=alpha-Q; y2=Q^2-alpha^2; y3=alpha^3-Q^3\ny4=alpha^2*Q-alpha*Q^2; y5=alpha*Q^3-alpha^3*Q; y6=alpha^3*Q^2-alpha^2*Q^3', styles['Code']),
       Paragraph('The six variables are integrated backward from y_max to the wall. The wall dispersion condition is y1(0)=0.',styles['Body2']),PageBreak(),
       Paragraph('3. Numerical results: Re_delta*=1500, omega0=0.1, y_max=12',styles['Section2'])]
     table=[['Mode','alpha_r','alpha_i','|y1(0)|','Behaviour']]
