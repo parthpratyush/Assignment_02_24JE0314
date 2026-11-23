@@ -1,169 +1,228 @@
-# Assignment 02 - Orr-Sommerfeld Spatial Stability using the Compound Matrix Method
+# Assignment 02 — Orr–Sommerfeld Spatial Stability
 
 **Student:** Pratyush Singh Parmar  
 **Roll No.:** 24JE0314  
 **Institute:** IIT (ISM) Dhanbad
 
-This repository computes spatial eigenvalues of the two-dimensional Orr-Sommerfeld equation for a Blasius boundary layer. The fourth-order Orr-Sommerfeld equation is converted into the six-equation compound-matrix initial-value problem from the supplied lecture notes. The code integrates the prescribed far-field initial conditions toward the wall, evaluates the wall dispersion function, searches the complex wavenumber plane, and generates plots.
+This project calculates the spatial eigenvalues of the two-dimensional Orr–Sommerfeld equation for a Blasius boundary layer. It uses the **Compound Matrix Method (CMM)** to convert the fourth-order boundary-value problem into a six-equation initial-value problem (IVP).
 
-## 1. Problem statement
+The code computes the Blasius base flow, applies analytical conditions at the free-stream boundary, integrates the compound system towards the wall, searches the complex wavenumber plane, and plots the results.
 
-For spatial instability analysis, the circular frequency `omega0` and Reynolds number `Re_delta_star` are real, while the streamwise wavenumber is complex:
+---
 
-\[
-\alpha = \alpha_r + i\alpha_i.
-\]
+## 1. Problem and parameters
 
-The two-dimensional Orr-Sommerfeld equation used here is
+For spatial instability analysis, the Reynolds number and circular frequency are real. The streamwise wavenumber is complex:
 
-\[
-(D^2-\alpha^2)^2\phi = i\widetilde{Re}\left[(\alpha U-\omega_0)(D^2-\alpha^2)\phi-\alpha U''\phi\right],
-\]
+$$
+\alpha = \alpha_r + i\alpha_i
+$$
 
-where `D = d/d(y_tilde)`, `y_tilde = y/delta_star`, and `U` is the dimensionless Blasius streamwise velocity.
+The two-dimensional Orr–Sommerfeld equation is
 
-The far-field decay rate is
+$$
+(D^2-\alpha^2)^2\phi =
+i\widetilde{Re}
+\left[
+(\alpha U-\omega_0)(D^2-\alpha^2)\phi
+-\alpha U''\phi
+\right]
+$$
 
-\[
-Q=\sqrt{\alpha^2+i\widetilde{Re}(\alpha-\omega_0)},\qquad \Re(Q)>0.
-\]
+where:
 
-The six compound variables are the 2-by-2 minors of the two decaying fundamental solutions. They satisfy
+- $D = d/d\widetilde{y}$ is differentiation with respect to the wall-normal coordinate.
+- $\widetilde{y} = y/\delta^*$ is the displacement-thickness coordinate.
+- $U(\widetilde{y})$ is the Blasius streamwise velocity, normalized by the free-stream velocity.
+- $\widetilde{Re}$ is the Reynolds number based on displacement thickness.
+- $\omega_0$ is the non-dimensional circular frequency.
 
-\[
+The free-stream decay parameter is
+
+$$
+Q = \sqrt{\alpha^2+i\widetilde{Re}(\alpha-\omega_0)},
+\qquad \operatorname{Re}(Q)>0
+$$
+
+The square-root branch is selected so that the disturbance modes decay in the free stream.
+
+## 2. Compound Matrix Method
+
+The six compound variables are the $2\times2$ minors formed from the two decaying fundamental solutions. They satisfy the following first-order IVP:
+
+$$
 \begin{aligned}
-y_1'&=y_2, & y_2'&=y_3+y_4,\\
-y_3'&=b_1y_2+y_5, & y_4'&=y_5,\\
-y_5'&=y_6+b_1y_4+b_2y_1, & y_6'&=b_2y_2,
+\frac{dy_1}{d\widetilde{y}} &= y_2, \\
+\frac{dy_2}{d\widetilde{y}} &= y_3+y_4, \\
+\frac{dy_3}{d\widetilde{y}} &= b_1y_2+y_5, \\
+\frac{dy_4}{d\widetilde{y}} &= y_5, \\
+\frac{dy_5}{d\widetilde{y}} &= y_6+b_1y_4+b_2y_1, \\
+\frac{dy_6}{d\widetilde{y}} &= b_2y_2.
 \end{aligned}
-\]
+$$
 
-with
+The coefficients are
 
-\[
-b_1=2\alpha^2+i\widetilde{Re}(\alpha U-\omega_0),
-\]
+$$
+b_1 = 2\alpha^2+i\widetilde{Re}(\alpha U-\omega_0)
+$$
 
-\[
-b_2=\alpha^4+i\widetilde{Re}\alpha U''+i\widetilde{Re}\alpha^2(\alpha U-\omega_0).
-\]
+$$
+b_2 = \alpha^4+i\widetilde{Re}\alpha U''
++i\widetilde{Re}\alpha^2(\alpha U-\omega_0)
+$$
 
-The scaled far-field initial conditions at `y_tilde = y_max` are
+### Initial conditions at the free stream
 
-\[
+At the truncated free-stream location $\widetilde{y}=\widetilde{y}_{\max}$, the scaled initial values are
+
+$$
 \begin{aligned}
-y_1&=\alpha-Q, & y_2&=Q^2-\alpha^2,\\
-y_3&=\alpha^3-Q^3, & y_4&=\alpha^2Q-\alpha Q^2,\\
-y_5&=\alpha Q^3-\alpha^3Q, & y_6&=\alpha^3Q^2-\alpha^2Q^3.
+y_1 &= \alpha-Q, \\
+y_2 &= Q^2-\alpha^2, \\
+y_3 &= \alpha^3-Q^3, \\
+y_4 &= \alpha^2Q-\alpha Q^2, \\
+y_5 &= \alpha Q^3-\alpha^3Q, \\
+y_6 &= \alpha^3Q^2-\alpha^2Q^3.
 \end{aligned}
-\]
+$$
 
-The wall boundary conditions are satisfied when the dispersion relation vanishes:
+The IVP is integrated **backwards from the free stream to the wall**.
 
-\[
-\boxed{\;y_1(0;\alpha,\omega_0,\widetilde{Re})=0\;}.
-\]
+### Wall dispersion relation
 
-## 2. Numerical approach
+The wall boundary conditions require the dispersion function to vanish:
 
-1. **Blasius base flow:** solve `f''' + 0.5*f*f'' = 0` with `f(0)=f'(0)=0` and `f'(infinity)=1`. The displacement-thickness factor is evaluated numerically, and the profile is expressed in `y_tilde = y/delta_star`.
-2. **Compound system:** calculate `Q` and the six analytical initial values at the truncated free-stream boundary `y_max`.
-3. **IVP integration:** integrate the six coupled equations backward from `y_max` to the wall using classical fourth-order Runge-Kutta. The state is divided by its infinity norm after each step; this common positive rescaling prevents overflow and preserves the zero of the wall dispersion function.
-4. **Complex-plane search:** evaluate the real and imaginary parts of `y1(0)` over an `(alpha_r, alpha_i)` grid. Local minima of `|y1(0)|` seed a bounded nonlinear refinement.
-5. **Plots and results:** save the zero-contour intersection plot, scaled dispersion magnitude, Blasius profile, spatial growth indicator, and a CSV of the refined modes.
+$$
+\boxed{
+\widehat{D}(\alpha,\omega_0,\widetilde{Re})
+= y_1(0;\alpha,\omega_0,\widetilde{Re}) = 0
+}
+$$
 
-## 3. Reference case and numerical results
+The roots of this complex equation are found by locating the intersection of the contours
 
-The reference case printed in the supplied notes is `Re_delta_star = 1500` and `omega0 = 0.1`. The numerical search in this repository uses `y_max = 12` and a finite complex-alpha search box. The root values below are reproduced to the displayed precision:
+$$
+\operatorname{Re}(y_1(0))=0
+\qquad \text{and} \qquad
+\operatorname{Im}(y_1(0))=0
+$$
 
-| Mode | `alpha_r` | `alpha_i` | Spatial behaviour |
+in the $(\alpha_r,\alpha_i)$ plane.
+
+## 3. Numerical procedure
+
+1. **Blasius base flow:** solve the similarity equation
+   $$
+   f'''+\frac{1}{2}ff''=0,
+   \qquad f(0)=f'(0)=0,\quad f'(\infty)=1.
+   $$
+   The displacement-thickness factor is evaluated numerically, and the velocity profile is expressed in $\widetilde{y}=y/\delta^*$ coordinates.
+
+2. **Far-field initialisation:** calculate $Q$, $b_1$, $b_2$, and the six analytical compound initial values.
+
+3. **IVP integration:** integrate the six coupled equations backwards using classical fourth-order Runge–Kutta (RK4). The six-component state is commonly rescaled during integration to control overflow; this does not change the zero of the dispersion function.
+
+4. **Complex-plane search:** evaluate the real and imaginary parts of $y_1(0)$ on a grid in the $(\alpha_r,\alpha_i)$ plane. Refine candidate intersections using a bounded nonlinear solver.
+
+5. **Plots and output:** save the dispersion contours, dispersion magnitude, Blasius base-flow profile, spatial growth indicator, and computed eigenvalues.
+
+## 4. Reference case and results
+
+The lecture notes provide the reference case:
+
+| Parameter | Value |
+|---|---:|
+| $\widetilde{Re}$ | 1500 |
+| $\omega_0$ | 0.1 |
+
+The computation uses $\widetilde{y}_{\max}=12$ as the finite free-stream boundary.
+
+The three reference eigenvalues are:
+
+| Mode | $\alpha_r$ | $\alpha_i$ | Spatial behaviour |
 |---:|---:|---:|---|
-| 1 | 0.13301166 | 0.21791206 | Decays (`alpha_i > 0`) |
-| 2 | 0.17675903 | 0.12104523 | Decays (`alpha_i > 0`) |
-| 3 | 0.29373736 | -0.00703999 | Grows (`alpha_i < 0`) |
+| 1 | 0.13301166 | 0.21791206 | Decay |
+| 2 | 0.17675903 | 0.12104523 | Decay |
+| 3 | 0.29373736 | -0.00703999 | Growth |
 
-The source notes report approximately `(0.13301162, 0.21791196)`, `(0.17675906, 0.12104521)`, and `(0.29373724, -0.00703994)`. Small differences in the last digits arise from the finite integration step and the root refinement tolerance.
+The corresponding wall-dispersion residual magnitudes in **results.csv** are approximately $2.171\times10^{-11}$, $4.579\times10^{-15}$, and $4.878\times10^{-10}$.
 
-For the spatial convention used in the notes, `alpha_i < 0` indicates downstream growth and `alpha_i > 0` indicates downstream decay.
+For the spatial convention used in the lecture notes:
 
-## 4. Repository structure
+- $\alpha_i < 0$: disturbance grows downstream (spatially unstable).
+- $\alpha_i > 0$: disturbance decays downstream (spatially stable).
 
-```text
+The values above closely reproduce the reference table in the supplied Orr–Sommerfeld notes. Small differences in the final digits arise from numerical integration and root-refinement tolerances.
+
+## 5. Repository structure
+
+~~~text
 Assignment_02_24JE0314/
 ├── README.md
 ├── requirements.txt
-├── run_study.py                 # main grid search + output generation
-├── generate_figures.py          # regenerate figures from saved grid data
-├── build_report.py              # create REPORT.pdf from numerical outputs
-├── results.csv                  # refined eigenvalues
-├── dispersion_grid.npz          # saved complex-plane grid
+├── run_study.py                 # Run the grid search and generate outputs
+├── generate_figures.py          # Regenerate plots from saved grid data
+├── build_report.py              # Build REPORT.pdf
+├── results.csv                  # Refined eigenvalues and wall residuals
 ├── methods/
-│   ├── __init__.py
 │   ├── blasius.py               # Blasius similarity profile
-│   ├── compound_matrix.py       # six-equation CMM IVP
-│   └── root_finding.py          # grid search + root refinement
+│   ├── compound_matrix.py       # Six-equation CMM initial-value solver
+│   └── root_finding.py          # Grid search and root refinement
 ├── tests/
-│   └── test_compound_matrix.py  # checks against reference eigenvalues
+│   └── test_compound_matrix.py  # Numerical regression tests
 ├── report/
-│   └── report.md                # technical write-up
-├── figures/                     # generated PNG and SVG plots
+│   └── report.md                # Technical report
 └── .github/workflows/
-    └── tests.yml                # automated regression test
-```
+    └── tests.yml                # GitHub Actions tests
+~~~
 
-## 5. Run the project
+The **figures/** directory and **dispersion_grid.npz** are generated when the study is run locally.
+
+## 6. How to run
 
 Python 3.10 or newer is recommended.
 
-```bash
-# 1. Clone the repository
- git clone https://github.com/parthpratyush/Assignment_02_24JE0314.git
- cd Assignment_02_24JE0314
+~~~bash
+# Clone the repository
+git clone https://github.com/parthpratyush/Assignment_02_24JE0314.git
+cd Assignment_02_24JE0314
 
-# 2. Install dependencies
- python3 -m venv .venv
- source .venv/bin/activate
- pip install -r requirements.txt
+# Create and activate a virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
 
-# 3. Run the default reference case
- python run_study.py
+# Install dependencies
+pip install -r requirements.txt
 
-# 4. Build the submission report
- python build_report.py
+# Run the numerical study and generate plots
+python run_study.py
 
-# 5. Run regression checks
- pytest -q
-```
+# Build the PDF report
+python build_report.py
 
-The default run uses `Re_delta_star = 1500`, `omega0 = 0.1`, and `y_max = 12`. Parameters and the search domain can be changed from the command line:
+# Run the regression tests
+pytest -q
+~~~
 
-```bash
-python run_study.py --re 1500 --omega0 0.1 --y-max 12 \
-  --alpha-r-min 0.08 --alpha-r-max 0.50 \
-  --alpha-i-min -0.06 --alpha-i-max 0.50
-```
+### Change the input parameters
 
-## 6. Generated figures
+For example, to run the reference case with a different search range:
 
-Running `python run_study.py` generates the following plots in the `figures/` directory in both PNG and SVG formats:
-
-- Dispersion zero contours in the complex-`alpha` plane, with the refined eigenvalues marked.
-- Scaled magnitude of the wall dispersion function.
-- Blasius base-flow velocity and its second derivative.
-- Spatial growth/decay indicator for the computed modes.
-
-The generated plots and the submission-ready PDF report are included in the downloadable project bundle.
+~~~bash
+python run_study.py --re 1500 --omega0 0.1 --y-max 12 --alpha-r-min 0.08 --alpha-r-max 0.50 --alpha-i-min -0.06 --alpha-i-max 0.50
+~~~
 
 ## 7. Notes and assumptions
 
-- This implementation solves the **2-D spatial** problem: `alpha` is complex and `omega0` is real. It does not claim to solve the temporal or three-dimensional problem.
-- The uploaded notes prescribe the Blasius profile but do not provide a tabulated `U(y_tilde)` array. The code therefore computes the classical Blasius similarity solution and converts it to displacement-thickness coordinates.
-- The free stream at infinity is truncated at `y_max = 12`. This is a numerical approximation; increase `--y-max` to study domain sensitivity.
-- The dispersion values are rescaled during integration to avoid overflow. Their zero contours and eigenvalue locations are invariant under this common nonzero scaling; the plotted magnitude is therefore labelled **scaled**.
-- The CMM initial conditions, coefficients, first-order system, and wall dispersion condition follow the equations in the supplied *Orr-Sommerfeld Equation* notes (2-D Orr-Sommerfeld equation and CMM section, pp. 7-18 of the uploaded PDF).
+- This is the **two-dimensional spatial stability problem**: $\alpha$ is complex, while $\omega_0$ and $\widetilde{Re}$ are real.
+- The lecture notes do not provide a tabulated Blasius velocity profile. The code therefore computes the classical Blasius similarity solution and converts it to displacement-thickness coordinates.
+- The infinite free-stream boundary is truncated at $\widetilde{y}_{\max}=12$ for the reference run. This is a numerical approximation; increase **--y-max** to investigate domain sensitivity.
+- The compound system is homogeneous. Common non-zero rescaling of its six-component state prevents overflow without changing the location of dispersion-function zeros.
+- The Orr–Sommerfeld equation, compound coefficients, initial conditions, and wall dispersion relation follow the supplied *Orr-Sommerfeld Equation* notes, particularly the 2-D equation and CMM derivation (PDF pages 7–18).
 
 ## 8. Author
 
 **Pratyush Singh Parmar**  
-Roll No.: **24JE0314**  
-IIT (ISM) Dhanbad
+**Roll No.:** 24JE0314  
+**IIT (ISM) Dhanbad
