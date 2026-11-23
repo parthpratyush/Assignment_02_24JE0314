@@ -1,4 +1,4 @@
 mode,Re_delta_star,omega0,alpha_r,alpha_i,abs_wall_residual,spatial_behavior
-1,1500,0.1,0.1330116644,0.2179120562,2.1710e-11,spatially stable (decay)
-2,1500,0.1,0.1767590267,0.1210452285,4.5791e-15,spatially stable (decay)
-3,1500,0.1,0.2937373576,-0.0070399808,4.8779e-10,spatially unstable (growth)
+1,1500.0,0.1,0.1330116644,0.2179120562,1.9998e-11,spatially stable (decay)
+2,1500.0,0.1,0.1767590267,0.1210452285,6.0824e-15,spatially stable (decay)
+3,1500.0,0.1,0.2937373576,-0.0070399808,4.8779e-10,spatially unstable (growth)
